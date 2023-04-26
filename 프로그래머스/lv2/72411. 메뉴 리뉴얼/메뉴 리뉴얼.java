@@ -2,103 +2,107 @@ import java.util.*;
 
 class Solution {
     
-    ArrayList[] list;
-    Set<String> courseName=new HashSet<>();
-    ArrayList<String> name=new ArrayList<>();
-    int max=2;
+    ArrayList<ArrayList<String>> order=new ArrayList<>();
+    int[] courseCnt;
+    
+    
+    ArrayList<ArrayList<String>> list=new ArrayList<>();
     
     public String[] solution(String[] orders, int[] course) {
-        String[] answer;
-        list=new ArrayList[orders.length];
+        
+        String[] answer={};
         
         for(int i=0;i<orders.length;i++){
-            String str=orders[i];
-            list[i]=new ArrayList<String>();
-            for(int j=0;j<str.length();j++){
-                list[i].add(String.valueOf(str.charAt(j)));
+            order.add(new ArrayList<String>());
+            for(int j=0;j<orders[i].length();j++){
+                order.get(i).add(String.valueOf(orders[i].charAt(j)));
             }
-            Collections.sort(list[i]);
+            Collections.sort(order.get(i));
         }
         
-        Arrays.sort(course);
+        courseCnt=course;
+        Arrays.sort(courseCnt);
         
-        for(int i=0;i<course.length;i++){
-            for(int j=0;j<list.length;j++){
-                chooseMenu(course[i],"",j,0);
-            }
-            for(int j=0;j<courseName.size();j++){
-                Iterator iter = courseName.iterator();
-                while(iter.hasNext()) {
-                    name.add(String.valueOf(iter.next()));
+        for(int i=0;i<courseCnt.length;i++)
+            list.add(new ArrayList<String>());
+        
+        int idx=0;
+        
+        for(int cnt:courseCnt){
+            for(int i=0;i<order.size();i++)
+                dfs("",idx,cnt,0,i);
+            idx++;
+        }
+        
+        ArrayList<String> ans=new ArrayList<>();
+        
+        for(ArrayList<String> nowList:list){
+            ArrayList<String> temp=new ArrayList<>();
+            int max=2;
+            for(String now:nowList){
+                int cnt=0;
+                for(String nowOrder:orders){
+                    boolean istrue=true;
+                    for(int i=0;i<now.length();i++){
+                        if(!nowOrder.contains(String.valueOf(now.charAt(i)))){
+                            istrue=false;
+                            break;
+                        }
+                    }
+                    if(istrue)
+                        cnt++;
                 }
-                System.out.println();
-                courseName=new HashSet<>();
+                if(max<cnt){
+                    max=cnt;
+                    temp=new ArrayList<>();
+                    temp.add(now);
+                }
+                else if(max==cnt){
+                    temp.add(now);
+                }
             }
-            max=2;
-
+            
+            for(String str:temp){
+                ans.add(str);
+            }
         }
         
-        answer=new String[name.size()];
+        /*
+        for(ArrayList<String> nowList:list){
+            for(int i=0;i<nowList.size();i++){
+                System.out.print(nowList.get(i)+" ");
+            }
+            System.out.println();
+        }
+        */
         
-        Collections.sort(name);
+        Collections.sort(ans);
         
-        for(int i=0;i<name.size();i++){
-            answer[i]=name.get(i);
+        answer=new String[ans.size()];
+        
+        idx=0;
+        
+        for(String now:ans){
+            answer[idx++]=now;
         }
         
         return answer;
     }
     
-    public void chooseMenu(int count,String str,int listNum,int idx){
-        if(str.length()==count){
-            dfs(str,listNum,0,0);
+    void dfs(String str,int listIdx,int max,int nowIdx,int orderIdx){
+        if(str.length()==max){
+            if(!list.get(listIdx).contains(str))
+                list.get(listIdx).add(str);
             return;
         }
-        
-        if(idx+1<=list[listNum].size()){
-            chooseMenu(count,str,listNum,idx+1);
-            str+=list[listNum].get(idx);
-            chooseMenu(count,str,listNum,idx+1);
-        }
-    }
-    
-    public void dfs(String str,int listNum,int idx,int total){
-        if(idx==list.length){
-            if(max<total){
-                max=total;
-                courseName=new HashSet<>();
-                courseName.add(str);
-            }
-            else if(max==total){
-                courseName.add(str);
-            }
-            return;  
-        }
-
-        if(idx==listNum){
-            dfs(str,listNum,idx+1,total+1);
+        if(order.get(orderIdx).size()==nowIdx)
             return;
-        }
+        
+        String nextStr=str+order.get(orderIdx).get(nowIdx++);
 
         
-        int a=0;
-        int count=0;
-        for(int i=0;i<list[idx].size();i++){
-            if(list[idx].get(i).equals(String.valueOf(str.charAt(a)))){
-                count++;
-                a++;
-                if(a==str.length())
-                    break;
-            }
-        }
+        dfs(nextStr,listIdx,max,nowIdx,orderIdx);
+        dfs(str,listIdx,max,nowIdx,orderIdx);
         
-        if(count==str.length()){
-            dfs(str,listNum,idx+1,total+1);
-        }
-        else{
-            dfs(str,listNum,idx+1,total);
-        }
-        
-        return;
     }
 }
