@@ -24,7 +24,7 @@ class Solution {
         long half=(total1+total2)/2;
         
         while(true){
-            if(queue1.length*4<answer)
+            if(queue1.length*3<answer)
                 return -1;
             
             if(total1==total2){
