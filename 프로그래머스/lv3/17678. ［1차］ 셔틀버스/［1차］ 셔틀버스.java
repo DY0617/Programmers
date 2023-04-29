@@ -27,32 +27,8 @@ class Solution {
                 }
                 */
                 
-                if(list.size()==m){
-                    if(time>=list.get(list.size()-1)){
-                        int now=list.get(list.size()-1)-1;
-                        String clock=String.valueOf(now/60);
-                        String minute=String.valueOf(now%60);
-                        if(clock.length()==1){
-                            clock="0"+clock;
-                        }
-                        if(minute.length()==1){
-                            minute="0"+minute;
-                        }
-                        answer=clock+":"+minute;
-                    }
-                    else{
-                        String clock=String.valueOf(time/60);
-                        String minute=String.valueOf(time%60);
-                        if(clock.length()==1){
-                            clock="0"+clock;
-                        }
-                        if(minute.length()==1){
-                            minute="0"+minute;
-                        }
-                        answer=clock+":"+minute;
-                    }
-                }
-                else if(list.size()>m){
+                
+                if(list.size()>=m){
                     if(time>=list.get(m-1)){
                         int now=list.get(m-1)-1;
                         String clock=String.valueOf(now/60);
