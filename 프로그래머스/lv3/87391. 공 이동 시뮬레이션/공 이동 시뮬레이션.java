@@ -1,34 +1,38 @@
-import java.util.*;
-
 class Solution {
     public long solution(int n, int m, int x, int y, int[][] queries) {
- // 0, 1, 2, 3 = {좌, 우, 상, 하}
-        int[] point = { y, y + 1, x, x + 1 };
-        int[] dir = { -1, 1, -1, 1 };
-        int[] boundary = { 0, m, 0, n };
-        int[] limit = { m, m, n, n };
-
-        for (int i = queries.length - 1; i >= 0; i--) {
-            int command = queries[i][0];
-            int dx = queries[i][1];
-
-            // ReverseQuery => {우, 좌, 하, 상} 으로 움직일 것
-            int reverse = command ^ 1; // 0->1, 1->0, 2->3, 3->2
-            point[reverse] += dir[reverse] * dx;
-            point[reverse] = Math.max(Math.min(point[reverse], limit[reverse]), 0);
-
-            // 현재 위치가 벽에 부딪히지 않았을 때
-            if (point[command] != boundary[command]) {
-                point[command] += dir[reverse] * dx;
-                point[command] = Math.max(Math.min(point[command], limit[command]), 0);
-            }
-
-            // 경계를 벗어났을 때
-            if (point[0] == m || point[1] == 0 || point[2] == n || point[3] == 0) {
-                return 0L;
+      
+        int x1 = x, y1 = y;
+        int x2 = x, y2 = y;
+        
+        //타겟 좌표에서 시작을 하는 역순과정이므로
+        //queries를 역순으로 읽고 
+        //공의 이동방향도 반대로 이동해야 한다.
+        
+        for(int i=queries.length-1; 0<=i; i--){
+            
+            if(queries[i][0]==2){//아래로 이동
+                if(x1!=0){ x1 = x1+queries[i][1]; }
+                x2 = x2+queries[i][1] < n-1 ? x2+queries[i][1] : n-1;
+                if(n<x1){ return 0; }
+            }else if(queries[i][0]==3){//위로 이동
+                x1 = 0 < x1-queries[i][1] ? x1-queries[i][1] : 0;
+                if(x2!=n-1){ x2 = x2-queries[i][1]; }
+                if(x2<0){ return 0; }
+            }else if(queries[i][0]==0){//우로 이동
+                if(y1!=0){ y1 = y1+queries[i][1]; }
+                y2 = y2+queries[i][1] < m-1 ? y2+queries[i][1] : m-1;
+                if(m<y1){ return 0; }
+            }else{//좌로 이동
+                y1 = 0 < y1-queries[i][1] ? y1-queries[i][1] : 0;
+                if(y2!=m-1){ y2 = y2-queries[i][1]; }
+                if(y2<0){ return 0; }
             }
         }
-        return (1L * point[1] - point[0]) * (1L * point[3] - point[2]);
-
+        
+        long X = x2-x1+1;
+        long Y = y2-y1+1;
+        
+        return X*Y;
+        
     }
 }
